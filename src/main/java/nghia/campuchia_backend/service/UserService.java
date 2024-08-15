@@ -5,7 +5,7 @@ import nghia.campuchia_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -17,12 +17,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    /*
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }*/
-
     public User getUserById(String user_id) {
         return userRepository.findById(user_id).orElse(null);
+    }
+
+    public User updateName(String user_id, String new_name) {
+        Optional<User> existingUserOpt = userRepository.findById(user_id);
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+            // Update name field
+            existingUser.setName(new_name);
+            return userRepository.save(existingUser);
+        } else {
+            return null; // User not found
+        }
     }
 }

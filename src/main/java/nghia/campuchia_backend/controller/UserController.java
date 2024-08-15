@@ -105,5 +105,57 @@ public class UserController {
         }
     }
 
-
+    @PutMapping("/api/user")
+    @Operation(
+            summary = "Update user name",
+            description = "Update the name of an existing user based on their user_id"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User name updated successfully. Response contains the updated user object",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthenticated. Missing idToken, or expired idToken.",
+                    content = {
+                            @Content(mediaType = "none")
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found with the provided id",
+                    content = {
+                            @Content(mediaType = "none")
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server issue. Example: syntax issue.",
+                    content = {
+                            @Content(mediaType = "none")
+                    }
+            )
+    })
+    public ResponseEntity<User> updateUserName(
+            @Parameter(
+                    description = "ID of the user to update",
+                    required = true
+            )
+            @RequestParam String user_id,
+            @Parameter(
+                    description = "New name of the user",
+                    required = true
+            )
+            @RequestParam String new_name){
+        User updated_user = userService.updateName(user_id, new_name);
+        if (updated_user != null) {
+            return new ResponseEntity<>(updated_user, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
