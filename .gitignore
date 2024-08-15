@@ -38,3 +38,6 @@ out/
 
 ### properties ###
 src/main/resources/env.properties
+
+### IDK ###
+src/main/.DS_Store
