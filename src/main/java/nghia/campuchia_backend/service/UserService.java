@@ -17,7 +17,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /*
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }*/
+
+    public User getUserById(String user_id) {
+        return userRepository.findById(user_id).orElse(null);
     }
 }
