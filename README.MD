@@ -22,7 +22,13 @@
 - [x] Update
 
 ### 2. Group management
-- [ ] Coming soon...
+- [x] Create group
+- [ ] Update group
+- [ ] Delete group
+- [x] Get group by ID
+- [x] Add user to group
+- [x] Get groups of user
+- [x] Get users of group
 
 ## Prerequisites
 - Java 17 (https://www.oracle.com/java/technologies/downloads/#java17)
