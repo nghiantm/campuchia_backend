@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-    @Column(name = "user_id", nullable = false, unique = true)
-    private String user_id;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -16,12 +16,15 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    public String getUser_id() {
-        return user_id;
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUsername(String user_id) {
+        this.username = user_id;
     }
 
     public String getName() {
@@ -38,5 +41,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import nghia.campuchia_backend.dto.ProfileDTO;
+import nghia.campuchia_backend.dto.ProfileWithTokensDTO;
 import nghia.campuchia_backend.model.User;
 import nghia.campuchia_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,68 +21,23 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/api/user")
-    @Operation(
-            summary = "Create a new user",
-            description = "Create a new user based on information provided by frontend after successfully register with Firebase"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "User created successfuly. Response contain the created user object",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthenticated. Missing idToken, or expired idToken.",
-                    content = {
-                            @Content(mediaType = "none")
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server issue. Example: syntax issue, duplicate field in MySQL.",
-                    content = {
-                            @Content(mediaType = "none")
-                    }
-            )
-    })
-    public User createUser(
-            @Parameter(
-                    description = "Must include `name`, `email`, and `user_id`.",
-                    required = true,
-                    schema = @Schema(implementation = User.class)
-            )
-            @RequestBody User user) {
-        return userService.saveUser(user);
-    }
-
     @GetMapping("/api/user")
     @Operation(
-            summary = "Get an user by ID"
+            summary = "Get an user by accessToken"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     description = "User found successfully",
                     content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDTO.class))
                     }
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Unauthenticated. Missing idToken, or expired idToken.",
+                    description = "Unauthenticated. Missing accessToken, or expired accessToken.",
                     content = {
-                            @Content(mediaType = "none")
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = {
-                            @Content(mediaType = "none")
+                            @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Missing or expired accessToken.\"}"))
                     }
             ),
             @ApiResponse(
