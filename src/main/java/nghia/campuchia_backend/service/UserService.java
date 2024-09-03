@@ -1,20 +1,13 @@
 package nghia.campuchia_backend.service;
 
-import nghia.campuchia_backend.dto.ProfileWithTokensDTO;
 import nghia.campuchia_backend.exception.InvalidCredentialsException;
 import nghia.campuchia_backend.exception.UserAlreadyExistsException;
 import nghia.campuchia_backend.model.User;
 import nghia.campuchia_backend.repository.UserRepository;
-import nghia.campuchia_backend.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -39,8 +32,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUserById(String user_id) {
-        return userRepository.findById(user_id).orElse(null);
+    public User getUserById(String username) {
+        return userRepository.findByUsername(username).orElse(null);
     }
 
     public User updateName(String user_id, String new_name) {
