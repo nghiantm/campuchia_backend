@@ -11,7 +11,11 @@ import nghia.campuchia_backend.model.Group;
 import nghia.campuchia_backend.model.GroupMember;
 import nghia.campuchia_backend.model.User;
 import nghia.campuchia_backend.service.GroupMemberService;
+import nghia.campuchia_backend.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +26,9 @@ public class GroupMemberController {
 
     @Autowired
     private GroupMemberService groupMemberService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping
     @Operation(
@@ -99,31 +106,24 @@ public class GroupMemberController {
         return groupMemberService.findByGroupId(group_id);
     }
 
-    @GetMapping("/by_id")
+    @GetMapping("/by_token")
     @Operation(
-            summary = "Get groups of a member.",
-            description = "Get all the groups of a member back in a list."
+            summary = "Get groups of a member through accessToken.",
+            description = "Get all the groups of a token back in a list."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "User exist. Response contain the list of groups user is in.",
+                    description = "Response contain the list of groups user is in.",
                     content = {
                             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Group.class)))
                     }
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Unauthenticated. Missing idToken, or expired idToken.",
+                    description = "Unauthenticated. Missing accessToken, or expired accessToken.",
                     content = {
-                            @Content(mediaType = "none")
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = {
-                            @Content(mediaType = "none")
+                            @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Missing or expired accessToken.\"}"))
                     }
             ),
             @ApiResponse(
@@ -134,12 +134,21 @@ public class GroupMemberController {
                     }
             )
     })
-    public List<GroupMember> getMembersByUser(
-            @Parameter(
-                    description = "Must include `user_id` as parameter.",
-                    required = true
-            )
-            @RequestParam("user_id") String user_id) {
-        return groupMemberService.findMyUserId(user_id);
+    public ResponseEntity<List<GroupMember>> getMembersByToken(
+            @Parameter(description = "Authorization header with Bearer token", required = true)
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            String username = jwtUtil.getUsernameFromToken(token);
+
+            if (jwtUtil.validateToken(token, username)) {
+                List<GroupMember> members = groupMemberService.findMyUserId(username);
+                return new ResponseEntity<>(members, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

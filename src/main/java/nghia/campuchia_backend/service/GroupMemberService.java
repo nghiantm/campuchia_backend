@@ -22,6 +22,6 @@ public class GroupMemberService {
     }
 
     public List<GroupMember> findMyUserId(String user_id) {
-        return groupMemberRepository.findByUserId(user_id);
+        return groupMemberRepository.findByUserId(user_id).orElse(null);
     }
 }
