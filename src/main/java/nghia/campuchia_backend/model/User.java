@@ -9,7 +9,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Integer id; // Primary key for JPA, not required in original design
 
     @Column(name = "username", nullable = false, unique = true)
     private String username;

@@ -51,13 +51,7 @@ public class GroupMemberController {
                     }
             )
     })
-    public GroupMember addGroupMember(
-            @Parameter(
-                    description = "Must include `group_id`, `user_id`, `add_date`, and 'added_by_user_id'. 'id' is not needed.",
-                    required = true,
-                    schema = @Schema(implementation = GroupMember.class)
-            )
-            @RequestBody GroupMember groupMember) {
+    public GroupMember addGroupMember(@RequestBody GroupMember groupMember) {
         return groupMemberService.saveGroupMember(groupMember);
     }
 

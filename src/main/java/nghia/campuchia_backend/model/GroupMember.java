@@ -10,7 +10,8 @@ public class GroupMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id; // Primary key for JPA, not required in original design
+    @Column(name = "id", nullable = false)
+    private Integer id; // Primary key for JPA, not required in original design
 
     @Column(name = "group_id", nullable = false)
     private String groupId;
@@ -23,14 +24,6 @@ public class GroupMember {
 
     @Column(name = "added_by_user_id", nullable = true)
     private String addedByUserId;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getGroupId() {
         return groupId;
