@@ -7,10 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import nghia.campuchia_backend.dto.ProfileDTO;
-import nghia.campuchia_backend.dto.ProfileWithTokensDTO;
 import nghia.campuchia_backend.model.User;
 import nghia.campuchia_backend.service.UserService;
+import nghia.campuchia_backend.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping("/api/user")
     @Operation(
@@ -48,19 +52,35 @@ public class UserController {
                     }
             )
     })
-    public ResponseEntity<User> getUserById(
-            @Parameter(
-                    description = "Must include `user_id` as parameter.",
-                    required = true
-            )
-            @RequestParam("user_id") String user_id) {
-        User user = userService.getUserById(user_id);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<ProfileDTO> getUserById(
+            @Parameter(description = "Authorization header with Bearer token", required = true)
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            String username = jwtUtil.getUsernameFromToken(token);
+
+            if (jwtUtil.validateToken(token, username)) {
+                User user = userService.getUserById(username);
+                if (user != null) {
+                    return new ResponseEntity<>(
+                            new ProfileDTO(
+                                    user.getUsername(),
+                                    user.getName(),
+                                    user.getEmail()
+                            ),
+                            HttpStatus.OK
+                    );
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     @PutMapping("/api/user")
     @Operation(

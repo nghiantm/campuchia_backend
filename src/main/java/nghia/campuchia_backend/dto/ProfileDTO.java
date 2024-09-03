@@ -5,6 +5,12 @@ public class ProfileDTO {
     private String name;
     private String email;
 
+    public ProfileDTO(String username, String name, String email) {
+        this.username = username;
+        this.name = name;
+        this.email = email;
+    }
+
     public String getUsername() {
         return username;
     }
