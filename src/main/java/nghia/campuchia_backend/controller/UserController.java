@@ -1,6 +1,5 @@
 package nghia.campuchia_backend.controller;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,7 +30,7 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping()
+    @GetMapping("/{username}")
     @Operation(
             summary = "Get an user profile by username"
     )
@@ -60,7 +59,7 @@ public class UserController {
     })
     public ResponseEntity<ProfileDTO> getUserByUsername(
             @Parameter(description = "Authorization header with Bearer token", required = true)
-            @RequestParam("username") String username,
+            @PathVariable("username") String username,
             // RequestHeader would throw 400 code if no auth header
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
     ) {
