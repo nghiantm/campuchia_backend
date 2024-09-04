@@ -1,5 +1,6 @@
 package nghia.campuchia_backend.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import nghia.campuchia_backend.dto.ProfileDTO;
 import nghia.campuchia_backend.dto.ProfileWithTokensDTO;
 import nghia.campuchia_backend.dto.SignInCredentialDTO;
+import nghia.campuchia_backend.exception.InvalidCredentialsException;
+import nghia.campuchia_backend.exception.UserNotFoundException;
 import nghia.campuchia_backend.model.User;
 import nghia.campuchia_backend.service.UserService;
 import nghia.campuchia_backend.utility.JwtUtil;
@@ -28,9 +31,9 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping
+    @GetMapping()
     @Operation(
-            summary = "Get an user by accessToken"
+            summary = "Get an user profile by username"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -55,33 +58,38 @@ public class UserController {
                     }
             )
     })
-    public ResponseEntity<ProfileDTO> getUserById(
+    public ResponseEntity<ProfileDTO> getUserByUsername(
             @Parameter(description = "Authorization header with Bearer token", required = true)
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
-            String username = jwtUtil.getUsernameFromToken(token);
-
-            if (jwtUtil.validateToken(token, username)) {
-                User user = userService.getUserById(username);
-                if (user != null) {
-                    return new ResponseEntity<>(
-                            new ProfileDTO(
-                                    user.getUsername(),
-                                    user.getName(),
-                                    user.getEmail()
-                            ),
-                            HttpStatus.OK
-                    );
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            @RequestParam("username") String username,
+            // RequestHeader would throw 400 code if no auth header
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
+    ) {
+        try {
+            // Validate the authorization header and extract the token
+            String token = jwtUtil.extractTokenFromHeader(authorizationHeader);
+            if (token == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            // Validate the token with the username
+            if (!jwtUtil.validateToken(token, username)) {
+                throw new InvalidCredentialsException("Invalid or expired token.");
+            }
+
+            // Retrieve the user by username
+            User user = userService.getUserById(username);
+            if (user == null) {
+                throw new UserNotFoundException("User not found.");
+            }
+
+            // Return the user profile in the response
+            ProfileDTO profile = new ProfileDTO(user.getUsername(), user.getName(), user.getEmail());
+            return new ResponseEntity<>(profile, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Handle any exceptions
+            throw e;
+        }
     }
 
     /*

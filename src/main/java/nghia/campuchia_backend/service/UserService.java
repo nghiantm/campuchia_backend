@@ -49,11 +49,10 @@ public class UserService {
     }
 
     public User validateUserCredentials(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(InvalidCredentialsException::new);
+        User user = userRepository.findByEmail(email);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException("Invalid credentials.");
         }
 
         return user;
