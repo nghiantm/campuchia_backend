@@ -30,7 +30,7 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping("/{username}")
+    @GetMapping("/profile")
     @Operation(
             summary = "Get an user profile by username"
     )
@@ -57,9 +57,8 @@ public class UserController {
                     }
             )
     })
-    public ResponseEntity<ProfileDTO> getUserByUsername(
+    public ResponseEntity<ProfileDTO> getUserProfile(
             @Parameter(description = "Authorization header with Bearer token", required = true)
-            @PathVariable("username") String username,
             // RequestHeader would throw 400 code if no auth header
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
     ) {
@@ -70,15 +69,11 @@ public class UserController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            // Validate the token with the username
-            if (!jwtUtil.validateToken(token, username)) {
-                throw new InvalidCredentialsException("Invalid or expired token.");
-            }
-
             // Retrieve the user by username
+            String username = jwtUtil.getUsernameFromToken(token);
             User user = userService.getUserById(username);
             if (user == null) {
-                throw new UserNotFoundException("User not found.");
+                throw new InvalidCredentialsException("Invalid token.");
             }
 
             // Return the user profile in the response
