@@ -1,6 +1,7 @@
 package nghia.campuchia_backend.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleSignatureException(SignatureException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("error", "Invalid token.");
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<Map<String, String>> handleMalformedJwtException(MalformedJwtException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }

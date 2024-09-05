@@ -1,5 +1,6 @@
 package nghia.campuchia_backend.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,6 +10,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @Schema(hidden = true)
     private Integer id; // Primary key for JPA, not required in original design
 
     @Column(name = "username", nullable = false, unique = true)

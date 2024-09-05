@@ -1,9 +1,7 @@
 package nghia.campuchia_backend.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 
 import java.sql.Date;
 
@@ -12,7 +10,8 @@ import java.sql.Date;
 public class Group {
 
     @Id
-    @Column(name = "group_id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "group_id", nullable = false, unique = true, length = 36)
     private String group_id;
 
     @Column(name = "group_name", nullable = false)
@@ -26,6 +25,9 @@ public class Group {
 
     @Column(name = "creation_date", nullable = false)
     private Date creation_date;
+
+    @Column(name = "created_by", nullable = false)
+    private String created_by;
 
     public String getGroup_id() {
         return group_id;
@@ -65,5 +67,13 @@ public class Group {
 
     public void setCreation_date(Date creation_date) {
         this.creation_date = creation_date;
+    }
+
+    public String getCreated_by() {
+        return created_by;
+    }
+
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
     }
 }

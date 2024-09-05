@@ -1,5 +1,6 @@
 package nghia.campuchia_backend.service;
 
+import nghia.campuchia_backend.dto.group.CreateGroupRequestDTO;
 import nghia.campuchia_backend.model.Group;
 import nghia.campuchia_backend.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,12 @@ public class GroupService {
     @Autowired
     private GroupRepository groupRepository;
 
-    public Group saveGroup(Group group) {
+    public Group saveGroup(CreateGroupRequestDTO requestDTO) {
+        Group group = new Group();
+        group.setGroup_name(requestDTO.getGroup_name());
+        group.setDescription(requestDTO.getDescription());
+        group.setGroup_avatar(requestDTO.getGroup_avatar());
+        group.setCreated_by(requestDTO.getCreated_by());
         return groupRepository.save(group);
     }
 
