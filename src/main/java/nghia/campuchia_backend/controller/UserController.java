@@ -10,7 +10,6 @@ import nghia.campuchia_backend.dto.ProfileDTO;
 import nghia.campuchia_backend.dto.ProfileWithTokensDTO;
 import nghia.campuchia_backend.dto.SignInCredentialDTO;
 import nghia.campuchia_backend.exception.InvalidCredentialsException;
-import nghia.campuchia_backend.exception.UserNotFoundException;
 import nghia.campuchia_backend.model.User;
 import nghia.campuchia_backend.service.UserService;
 import nghia.campuchia_backend.utility.JwtUtil;
