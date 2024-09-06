@@ -1,6 +1,5 @@
 package nghia.campuchia_backend.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 import java.sql.Date;

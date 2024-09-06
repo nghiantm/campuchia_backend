@@ -45,8 +45,4 @@ public class GroupResponseDTO {
     public String getCreated_by() {
         return created_by;
     }
-
-    public String getGroup_id() {
-        return group_id;
-    }
 }

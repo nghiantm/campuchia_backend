@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/group_member")
+//@RestController
+//@RequestMapping("/api/group_member")
 public class GroupMemberController {
 
     @Autowired
